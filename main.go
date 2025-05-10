@@ -5,20 +5,20 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/terrnit/pizza-crud-go/internal/delivery/http/pizza"
-	"github.com/terrnit/pizza-crud-go/internal/repository/pizza"
-	"github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
+	pizzahandler "github.com/terrnit/pizza-crud-go/internal/delivery/http/pizza"
+	pizzarepo "github.com/terrnit/pizza-crud-go/internal/repository/pizza"
+	pizzausecase "github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
 )
 
 func main() {
 	// Initialize repository
-	repo := pizza.NewMemoryRepository()
+	repo := pizzarepo.NewMemoryRepository()
 
 	// Initialize use case
-	useCase := pizza.NewUseCase(repo)
+	useCase := pizzausecase.NewUseCase(repo)
 
 	// Initialize handler
-	handler := pizza.NewHandler(useCase)
+	handler := pizzahandler.NewHandler(useCase)
 
 	// Setup router
 	router := mux.NewRouter()

@@ -1,4 +1,4 @@
-package pizza
+package http
 
 import (
 	"encoding/json"
@@ -7,14 +7,14 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/terrnit/pizza-crud-go/internal/domain/pizza"
-	"github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
+	pizzausecase "github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
 )
 
 type Handler struct {
-	useCase *pizza.UseCase
+	useCase *pizzausecase.UseCase
 }
 
-func NewHandler(useCase *pizza.UseCase) *Handler {
+func NewHandler(useCase *pizzausecase.UseCase) *Handler {
 	return &Handler{
 		useCase: useCase,
 	}
