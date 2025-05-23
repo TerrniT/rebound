@@ -1,0 +1,13 @@
+:80 {
+  @cachedFiles {
+    path *.jpg *.jpeg *.png *.gif *.ico *.js *.css
+  }
+  header @cachedFiles Cache-Control "public, max-age=604800, must-revalidate"
+  encode gzip
+
+  handle_path /api/* {
+    reverse_proxy http://backend:3000
+  }
+
+  reverse_proxy http://frontend:80
+}

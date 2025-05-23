@@ -1,0 +1,54 @@
+services:
+  caddy:
+    image: caddy:alpine
+    depends_on:
+      - frontend
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - 'caddy-data:/data/caddy'
+      - ./caddy/Caddyfile.prod:/etc/caddy/Caddyfile
+    environment:
+      DOMAIN: "${DOMAIN}"
+      EMAIL: "${EMAIL}"
+      LOG_FILE: "${LOG_FILE}"
+      CORS_ALLOWED_ORIGINS: "${CORS_ALLOWED_ORIGINS}"
+    restart: always
+
+  frontend:
+    build: 
+      context: ./frontend
+    expose:
+      - '3333'
+    volumes:
+      - ./frontend:/web
+    restart: always
+
+  backend:
+    build:
+      target: prod
+      context: ./backend
+    env_file:
+      - .env
+    expose:
+      - '3000'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+    restart: no
+
+  # redis:
+  #   image: redis:alpine
+  #   expose:
+  #     - '6379'
+  #   logging:
+  #     driver: none
+  #   restart: no
+
+volumes:
+  caddy-data:
+    driver: local

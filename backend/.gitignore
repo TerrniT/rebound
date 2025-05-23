@@ -1,0 +1,9 @@
+.env
+.env-local
+dist
+node_modules
+build
+logs
+
+.vscode
+.bolt

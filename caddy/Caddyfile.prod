@@ -1,0 +1,31 @@
+{
+    email {$EMAIL}
+}
+{$DOMAIN}:443 {
+  log {
+    level INFO
+    output file {$LOG_FILE} {
+      roll_size 10MB
+      roll_keep 10
+    }
+  }
+  tls {$EMAIL}
+  @cachedFiles {
+    path *.jpg *.jpeg *.png *.gif *.ico *.js *.css
+  }
+  reverse_proxy http://frontend:80
+}
+api.{$DOMAIN}:443 {
+  log {
+    level INFO
+    output file {$LOG_FILE} {
+      roll_size 10MB
+      roll_keep 10
+    }
+  }
+  tls {$EMAIL}
+  handle_path /api/* {
+    reverse_proxy http://backend:3000
+  }
+  reverse_proxy http://backend:3000
+}
