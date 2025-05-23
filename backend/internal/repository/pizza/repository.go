@@ -3,7 +3,7 @@ package pizza
 import (
 	"context"
 
-	"github.com/terrnit/pizza-crud-go/internal/domain/pizza"
+	"github.com/terrnit/rebound/backend/internal/domain/pizza"
 )
 
 // Repository defines the interface for pizza data operations

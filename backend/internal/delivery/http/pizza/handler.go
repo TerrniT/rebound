@@ -6,8 +6,8 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/terrnit/pizza-crud-go/internal/domain/pizza"
-	pizzausecase "github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
+	"github.com/terrnit/rebound/backend/internal/domain/pizza"
+	pizzausecase "github.com/terrnit/rebound/backend/internal/usecase/pizza"
 )
 
 type Handler struct {

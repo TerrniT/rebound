@@ -6,10 +6,10 @@ import (
 
 	"github.com/gorilla/mux"
 	httpSwagger "github.com/swaggo/http-swagger"
-	_ "github.com/terrnit/pizza-crud-go/docs" // This will be generated
-	pizzahandler "github.com/terrnit/pizza-crud-go/internal/delivery/http/pizza"
-	pizzarepo "github.com/terrnit/pizza-crud-go/internal/repository/pizza"
-	pizzausecase "github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
+	_ "github.com/terrnit/rebound/backend/docs" // This will be generated
+	pizzahandler "github.com/terrnit/rebound/backend/internal/delivery/http/pizza"
+	pizzarepo "github.com/terrnit/rebound/backend/internal/repository/pizza"
+	pizzausecase "github.com/terrnit/rebound/backend/internal/usecase/pizza"
 )
 
 // @title Pizza CRUD API

@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/terrnit/pizza-crud-go/internal/domain/pizza"
+	"github.com/terrnit/rebound/backend/internal/domain/pizza"
 )
 
 type memoryRepository struct {

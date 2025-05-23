@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/terrnit/pizza-crud-go/internal/domain/pizza"
-	pizzarepo "github.com/terrnit/pizza-crud-go/internal/repository/pizza"
+	"github.com/terrnit/rebound/backend/internal/domain/pizza"
+	pizzarepo "github.com/terrnit/rebound/backend/internal/repository/pizza"
 )
 
 var (

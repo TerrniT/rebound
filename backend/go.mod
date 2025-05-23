@@ -1,4 +1,4 @@
-module github.com/terrnit/pizza-crud-go
+module github.com/terrnit/rebound/backend
 
 go 1.21
 
