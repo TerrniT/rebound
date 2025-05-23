@@ -1,0 +1,21 @@
+hero:
+  title: Vtor
+  description: Стартовый шаблон Vite + Vue + GSAP
+  cta: Get started
+  buttons:
+    primary: Основной
+    secondary: Второстепенный
+    outline: Оутлайн
+    link: Ссылка
+    ghost: Призрачный
+    destructive: Опасный
+  technologies:
+    title: Сделано на современных технологиях
+themeSwitcher:
+  themes:
+    light: Светлая
+    dark: Темная
+languageSwitcher:
+  locales:
+    en: Английский
+    ru: Русский

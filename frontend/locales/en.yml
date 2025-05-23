@@ -1,0 +1,21 @@
+hero:
+  title: Vtor
+  description: Opinionated Vite + Vue + GSAP Starter Template
+  cta: Get started
+  buttons:
+    primary: Primary
+    secondary: Secondary
+    outline: Outline
+    link: Link
+    ghost: Ghost
+    destructive: Destructive
+  technologies:
+    title: Built with modern technologies
+themeSwitcher:
+  themes:
+    light: Light
+    dark: Dark
+languageSwitcher:
+  locales:
+    en: Eng
+    ru: Ru
