@@ -5,11 +5,18 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	httpSwagger "github.com/swaggo/http-swagger"
+	_ "github.com/terrnit/pizza-crud-go/docs" // This will be generated
 	pizzahandler "github.com/terrnit/pizza-crud-go/internal/delivery/http/pizza"
 	pizzarepo "github.com/terrnit/pizza-crud-go/internal/repository/pizza"
 	pizzausecase "github.com/terrnit/pizza-crud-go/internal/usecase/pizza"
 )
 
+// @title Pizza CRUD API
+// @version 1.0
+// @description A simple Pizza CRUD API service
+// @host localhost:8080
+// @BasePath /
 func main() {
 	// Initialize repository
 	repo := pizzarepo.NewMemoryRepository()
@@ -22,6 +29,9 @@ func main() {
 
 	// Setup router
 	router := mux.NewRouter()
+
+	// Swagger documentation
+	router.PathPrefix("/swagger").Handler(httpSwagger.WrapHandler)
 
 	// Register routes
 	router.HandleFunc("/pizzas", handler.Create).Methods(http.MethodPost)
