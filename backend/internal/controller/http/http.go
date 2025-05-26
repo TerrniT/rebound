@@ -39,6 +39,8 @@ func NewRouter(
 	l logger.Interface,
 ) *Router {
 	app := fiber.New(fiber.Config{
+		DisableKeepalive: true,
+		// EnablePrintRoutes: true,
 		ErrorHandler: func(c *fiber.Ctx, err error) error {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": err.Error(),
@@ -66,6 +68,8 @@ func NewRouter(
 		v1.NewProductRoutes(api, productUC, l)
 		v1.NewAuthRoutes(api, authUC, l)
 	}
+
+	app.Listen(":8080")
 
 	return &Router{
 		app: app,

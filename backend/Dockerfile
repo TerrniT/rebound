@@ -30,13 +30,14 @@ RUN apk add --no-cache ca-certificates tzdata
 WORKDIR /app
 
 # Copy binary from builder
-COPY --from=builder /app/main .
+COPY --from=builder /bin/app /app
+
+COPY --from=builder /app/config /config
+COPY --from=builder /app/migrations /migrations
+# Move to prod build dockerfile
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
 # Copy config files if needed
 COPY --from=builder /app/config ./config
 
-# Expose port
-EXPOSE 8080
-
-# Run the application
-CMD ["./main"]
+CMD ["./app"]
