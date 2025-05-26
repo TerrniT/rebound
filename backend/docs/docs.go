@@ -27,8 +27,8 @@ var SwaggerInfo = &swag.Spec{
 	Description:      "A simple Pizza CRUD API service",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
-	LeftDelim:        "{{",
-	RightDelim:       "}}",
+	// LeftDelim:        "{{",
+	// RightDelim:       "}}",
 }
 
 func init() {
