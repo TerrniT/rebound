@@ -49,7 +49,7 @@ services:
       - '443:443'
     volumes:
       - 'caddy-data:/data/caddy'
-      - ./caddy/Caddyfile.prod:/etc/caddy/Caddyfile
+      - ./apps/caddy/Caddyfile.prod:/etc/caddy/Caddyfile
     environment:
       DOMAIN: "${DOMAIN}"
       EMAIL: "${EMAIL}"
@@ -59,7 +59,7 @@ services:
 
   frontend:
     build: 
-      context: ./frontend
+      context: ./apps/frontend
     expose:
       - '3333'
     volumes:
@@ -71,7 +71,7 @@ services:
     container_name: backend
     platform: linux/amd64
     build:
-      context: ./backend
+      context: ./apps/backend
       dockerfile: Dockerfile
     environment:
       <<: *x-backend-app-environment

@@ -52,23 +52,23 @@ services:
       - '443:443'
     volumes:
       - 'caddy-data:/data/caddy'
-      - ./caddy/Caddyfile:/etc/caddy/Caddyfile
+      - ./apps/caddy/Caddyfile:/etc/caddy/Caddyfile
     restart: always
 
-  # frontend:
-  #   build: 
-  #     context: ./frontend
-  #   expose:
-  #     - '3333'
-  #   volumes:
-  #     - ./frontend:/web
-  #   restart: always
+  frontend:
+    build: 
+      context: ./apps/frontend
+    expose:
+      - '3333'
+    volumes:
+      - ./frontend:/web
+    restart: always
 
   backend:
     container_name: backend
     platform: linux/amd64
     build:
-      context: ./backend
+      context: ./apps/backend
       dockerfile: Dockerfile
     environment:
       <<: *x-backend-app-environment

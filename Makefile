@@ -16,7 +16,7 @@ compose-up-integration-test: ### Run docker compose with integration test
 .PHONY: compose-up-integration-test
 
 compose-down: ### Down docker compose
-	$(ALL_STACK) down --remove-orphans
+	$(BASE_STACK) down --remove-orphans
 .PHONY: compose-down
 
 docker-rm-volume: ### remove docker volume
