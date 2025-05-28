@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
-const router = useRouter()
 const isCollapsed = ref(false)
 
 const navigation = [
@@ -52,7 +50,7 @@ const navigation = [
       :class="{ 'ml-64': !isCollapsed, 'ml-0': isCollapsed }"
     >
       <div class="p-8">
-        <slot />
+        <RouterView />
       </div>
     </main>
   </div>

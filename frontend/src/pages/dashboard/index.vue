@@ -2,6 +2,9 @@
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Plus } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 import {
   Dialog,
   DialogContent,
@@ -11,15 +14,9 @@ import {
 } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { type DateValue, getLocalTimeZone, today } from '@internationalized/date'
-import { Plus } from 'lucide-vue-next'
-
-import { computed, ref } from 'vue'
 
 // Calendar
-// const date = ref(new Date())
-const date = ref(today(getLocalTimeZone())) as Ref<DateValue>
+const date = ref(new Date())
 
 // Summary Stats
 const dailyStats = ref({
@@ -78,15 +75,14 @@ const newFood = ref({
   time: '',
 })
 
-function addFood() {
-  if (!newFood.value.name || !newFood.value.calories)
-    return
+const addFood = () => {
+  if (!newFood.value.name || !newFood.value.calories) return
 
   const meal = meals.value.find(m => m.name === selectedMeal.value)
   if (meal) {
     meal.foods.push(newFood.value.name)
-    meal.calories += Number.parseInt(newFood.value.calories)
-    dailyStats.value.caloriesEaten += Number.parseInt(newFood.value.calories)
+    meal.calories += parseInt(newFood.value.calories)
+    dailyStats.value.caloriesEaten += parseInt(newFood.value.calories)
   }
 
   // Reset form
@@ -112,8 +108,8 @@ const waterProgress = computed(() =>
 const showAddWaterDialog = ref(false)
 const waterAmount = ref('0.25')
 
-function addWater() {
-  const amount = Number.parseFloat(waterAmount.value)
+const addWater = () => {
+  const amount = parseFloat(waterAmount.value)
   waterStats.value.current = Math.min(waterStats.value.current + amount, waterStats.value.goal)
   showAddWaterDialog.value = false
 }
@@ -126,7 +122,7 @@ function addWater() {
         Dashboard
       </h1>
       <p class="text-muted-foreground">
-        {{ date.toString() }}
+        {{ date.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) }}
       </p>
     </div>
 
@@ -138,7 +134,10 @@ function addWater() {
         </h2>
       </CardHeader>
       <CardContent>
-        <CommonCalendar v-model="date" />
+        <Calendar
+          v-model="date"
+          class="rounded-md border"
+        />
       </CardContent>
     </Card>
 
@@ -358,4 +357,4 @@ function addWater() {
 <route lang="yaml">
 meta:
   layout: dashboard
-</route>
+</route> 

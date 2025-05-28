@@ -22,6 +22,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@internationalized/date':
+        specifier: ^3.8.1
+        version: 3.8.1
       '@radix-icons/vue':
         specifier: ^1.0.0
         version: 1.0.0(vue@3.5.15(typescript@5.6.3))
@@ -38,7 +41,7 @@ importers:
         specifier: ^1.11.13
         version: 1.11.20(vue@3.5.15(typescript@5.6.3))
       '@vueuse/core':
-        specifier: ^12.5.0
+        specifier: ^12.8.2
         version: 12.8.2(typescript@5.6.3)
       '@vueuse/head':
         specifier: ^2.0.0
