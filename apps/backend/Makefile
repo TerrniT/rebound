@@ -41,9 +41,10 @@ format: ### Run code formatter
 	gci write . --skip-generated -s standard -s default
 .PHONY: format
 
-dev: deps swag-v1 ### swag run for API v1
-	go mod download && \
-	CGO_ENABLED=0 go run -tags migrate ./cmd/app
+dev:
+	@echo "dev: Running Go backend..." \
+    deps swag-v1 \
+	go mod download && CGO_ENABLED=0 go run -tags migrate ./cmd/app
 .PHONY: dev 
 
 

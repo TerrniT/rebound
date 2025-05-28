@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { useAuthStore } from '@/stores/auth'
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const auth = useAuthStore()

@@ -2,9 +2,10 @@
   "name": "rebound-backend",
   "version": "0.1.0",
   "scripts": {
-    "build": "",
+    "build": "make build",
     "dev": "make dev",
-    "lint": "",
+    "test": "make test",
+    "lint": "make linter-golangci",
     "pre-commit": "make pre-commit"
   }
 }
