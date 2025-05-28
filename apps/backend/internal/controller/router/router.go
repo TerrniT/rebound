@@ -1,17 +1,15 @@
 // Package v1 implements routing paths. Each services in own file.
-package http
+package router
 
-// https://github.com/evrone/go-clean-template/tree/master/internal/controller/http/v1
 import (
 	"net/http"
-
-	v1 "github.com/terrnit/rebound/backend/internal/controller/http/v1"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	fiberlogger "github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/swagger"
 	_ "github.com/terrnit/rebound/backend/docs" // Swagger docs.
+	v1 "github.com/terrnit/rebound/backend/internal/controller/router/v1"
 	"github.com/terrnit/rebound/backend/internal/entity"
 	"github.com/terrnit/rebound/backend/pkg/logger"
 )
@@ -31,6 +29,7 @@ type Router struct {
 // @name Authorization
 // @description Type "Bearer" followed by a space and JWT token.
 func NewRouter(
+	app *fiber.App,
 	userUC entity.UserUseCase,
 	nutritionUC entity.NutritionUseCase,
 	mealUC entity.MealUseCase,
@@ -38,16 +37,6 @@ func NewRouter(
 	authUC entity.AuthUseCase,
 	l logger.Interface,
 ) *Router {
-	app := fiber.New(fiber.Config{
-		DisableKeepalive: true,
-		// EnablePrintRoutes: true,
-		ErrorHandler: func(c *fiber.Ctx, err error) error {
-			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-				"error": err.Error(),
-			})
-		},
-	})
-
 	app.Use(cors.New())
 	app.Use(fiberlogger.New(fiberlogger.Config{
 		Format: "[${time}] ${status} - ${latency} ${method} ${path}\n",
@@ -69,17 +58,7 @@ func NewRouter(
 		v1.NewAuthRoutes(api, authUC, l)
 	}
 
-	app.Listen(":8080")
-
 	return &Router{
 		app: app,
 	}
-}
-
-func (r *Router) Run(addr string) error {
-	return r.app.Listen(addr)
-}
-
-func (r *Router) Shutdown() error {
-	return r.app.Shutdown()
 }

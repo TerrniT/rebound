@@ -8,7 +8,7 @@ import (
 	"syscall"
 
 	"github.com/terrnit/rebound/backend/config"
-	"github.com/terrnit/rebound/backend/internal/controller/http"
+	"github.com/terrnit/rebound/backend/internal/controller/router"
 	pgrepo "github.com/terrnit/rebound/backend/internal/repository/postgres"
 	"github.com/terrnit/rebound/backend/internal/usecase"
 	"github.com/terrnit/rebound/backend/pkg/httpserver"
@@ -43,7 +43,9 @@ func Run(cfg *config.Config) {
 
 	// HTTP Server
 	httpServer := httpserver.New(httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
-	http.NewRouter(
+
+	router.NewRouter(
+		httpServer.App,
 		userUC,
 		nutritionUC,
 		mealUC,

@@ -44,11 +44,18 @@ func New(opts ...Option) *Server {
 	}
 
 	app := fiber.New(fiber.Config{
+		DisableKeepalive: true,
+		// EnablePrintRoutes: true,
 		Prefork:      s.prefork,
 		ReadTimeout:  s.readTimeout,
 		WriteTimeout: s.writeTimeout,
 		JSONDecoder:  json.Unmarshal,
 		JSONEncoder:  json.Marshal,
+		ErrorHandler: func(c *fiber.Ctx, err error) error {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": err.Error(),
+			})
+		},
 	})
 
 	s.App = app

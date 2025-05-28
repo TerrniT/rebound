@@ -1,0 +1,10 @@
+{
+  "name": "rebound-backend",
+  "version": "0.1.0",
+  "scripts": {
+    "build": "",
+    "dev": "make dev",
+    "lint": "",
+    "pre-commit": "make pre-commit"
+  }
+}

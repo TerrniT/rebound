@@ -8,10 +8,6 @@ export
 endif
 
 LOCAL_BIN:=$(CURDIR)/bin
-BASE_STACK = docker compose -f docker-compose.yml
-INTEGRATION_TEST_STACK = $(BASE_STACK) -f docker-compose-integration-test.yml
-ALL_STACK = $(INTEGRATION_TEST_STACK)
-
 # HELP =================================================================================================================
 # This will output the help for each task
 # thanks to https://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
@@ -20,25 +16,8 @@ ALL_STACK = $(INTEGRATION_TEST_STACK)
 help: ## Display this help screen
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make \033[36m<target>\033[0m\n"} /^[a-zA-Z_-]+:.*?##/ { printf "  \033[36m%-15s\033[0m %s\n", $$1, $$2 } /^##@/ { printf "\n\033[1m%s\033[0m\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
 
-compose-up: ### Run docker compose (without backend and reverse proxy)
-	$(BASE_STACK) up --build -d db rabbitmq && docker compose logs -f
-.PHONY: compose-up
-
-compose-up-all: ### Run docker compose (with backend and reverse proxy)
-# Move to prod build dockerfile
-	$(BASE_STACK) up --build -d
-.PHONY: compose-up-all
-
-compose-up-integration-test: ### Run docker compose with integration test
-	$(INTEGRATION_TEST_STACK) up --build --abort-on-container-exit --exit-code-from integration-test
-.PHONY: compose-up-integration-test
-
-compose-down: ### Down docker compose
-	$(ALL_STACK) down --remove-orphans
-.PHONY: compose-down
-
 swag-v1: ### swag init
-	swag init -g internal/controller/http/http.go
+	swag init -g internal/controller/router/router.go
 .PHONY: swag-v1
 
 proto-v1: ### generate source files from proto
@@ -62,14 +41,11 @@ format: ### Run code formatter
 	gci write . --skip-generated -s standard -s default
 .PHONY: format
 
-run: deps swag-v1 ### swag run for API v1
+dev: deps swag-v1 ### swag run for API v1
 	go mod download && \
 	CGO_ENABLED=0 go run -tags migrate ./cmd/app
-.PHONY: run
+.PHONY: dev 
 
-docker-rm-volume: ### remove docker volume
-	docker volume rm go-clean-template_pg-data
-.PHONY: docker-rm-volume
 
 linter-golangci: ### check by golangci linter
 	golangci-lint run
@@ -108,5 +84,8 @@ bin-deps: ### install tools
 	GOBIN=$(LOCAL_BIN) go install tool
 .PHONY: bin-deps
 
-pre-commit: swag-v1 mock format linter-golangci test ### run pre-commit
+pre-commit-mock: swag-v1 mock format linter-golangci ### run pre-commit
+.PHONY: pre-commit-mock
+
+pre-commit: swag-v1 format linter-golangci ### run pre-commit
 .PHONY: pre-commit

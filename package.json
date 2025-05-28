@@ -1,0 +1,28 @@
+{
+  "name": "rebound-monorepo",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "lint": "turbo run lint",
+    "build": "turbo run build",
+    "test": "turbo run test",
+    "dev": "turbo run dev",
+    "prepare": "husky install",
+    "postinstall": "npx simple-git-hooks"
+  },
+  "packageManager": "pnpm@10.0.0",
+  "devDependencies": {
+     "turbo": "^2.5.3",
+     "lint-staged": "^15.2.10"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
+}

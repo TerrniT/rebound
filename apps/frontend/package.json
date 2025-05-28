@@ -1,6 +1,5 @@
 {
   "name": "rebound-frontend",
-  "type": "module",
   "version": "0.1.0",
   "private": true,
   "packageManager": "pnpm@9.14.2",
@@ -12,8 +11,8 @@
     "preview": "vite preview",
     "preview-https": "serve dist",
     "typecheck": "vue-tsc --noEmit",
+    "check-types": "vue-tsc --noEmit",
     "up": "taze major -I",
-    "postinstall": "npx simple-git-hooks",
     "sizecheck": "npx vite-bundle-visualizer"
   },
   "dependencies": {
@@ -78,5 +77,5 @@
   "resolutions": {
     "vite": "^6.0.1",
     "vite-plugin-inspect": "^0.10.0"
-  },
+  }
 }
