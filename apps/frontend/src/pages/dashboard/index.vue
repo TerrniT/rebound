@@ -1,4 +1,7 @@
 <script setup lang="ts">
+import { type DateValue, getLocalTimeZone, today } from '@internationalized/date'
+import { Clock, Plus, Search, Star } from 'lucide-vue-next'
+import { computed, ref } from 'vue'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import {
@@ -11,11 +14,8 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Tab, TabContent, TabList } from '@/components/ui/tabs'
-import { type DateValue, getLocalTimeZone, today } from '@internationalized/date'
-import { Clock, Plus, Search, Star } from 'lucide-vue-next'
 
-import { computed, ref } from 'vue'
+import { Tab, TabContent, TabList } from '@/components/ui/tabs'
 
 // Types
 interface Food {
