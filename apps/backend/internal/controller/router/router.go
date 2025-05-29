@@ -32,6 +32,10 @@ func NewRouter(
 	app *fiber.App,
 	userUC *usecase.UserUseCase,
 	foodItemUC *usecase.FoodItemUseCase,
+	// mealUC *usecase.MealUseCase,
+	// workoutPlanUC *usecase.WorkoutPlanUseCase,
+	workoutSessionUC *usecase.WorkoutSessionUseCase,
+	nutritionUC *usecase.NutritionUseCase,
 	l logger.Interface,
 ) *Router {
 	app.Use(cors.New())
@@ -50,6 +54,10 @@ func NewRouter(
 	{
 		v1.NewUserRoutes(api, userUC, l)
 		v1.NewFoodItemRoutes(api, foodItemUC, l)
+		// v1.NewMealRoutes(api, mealUC, l)
+		v1.NewWorkoutSessionRoutes(api, workoutSessionUC, l)
+		v1.NewNutritionRoutes(api, nutritionUC, l)
+		// v1.NewExerciseRoutes()
 	}
 
 	return &Router{

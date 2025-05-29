@@ -1,5 +1,19 @@
 basePath: /api
 definitions:
+  entity.ActivityLevel:
+    enum:
+    - sedentary
+    - lightly_active
+    - moderately_active
+    - very_active
+    - extra_active
+    type: string
+    x-enum-varnames:
+    - ActivityLevelSedentary
+    - ActivityLevelLightlyActive
+    - ActivityLevelModeratelyActive
+    - ActivityLevelVeryActive
+    - ActivityLevelExtraActive
   entity.FoodItem:
     properties:
       barcode_upc:
@@ -65,6 +79,29 @@ definitions:
     - FoodItemSourceUserCreated
     - FoodItemSourceSystem
     - FoodItemSourceAPI
+  entity.MealFoodItem:
+    properties:
+      calories_consumed:
+        type: number
+      carbs_consumed:
+        type: number
+      fat_consumed:
+        type: number
+      food_item_id:
+        type: string
+      id:
+        type: string
+      logged_at:
+        type: string
+      meal_id:
+        type: string
+      protein_consumed:
+        type: number
+      quantity_consumed:
+        type: number
+      serving_unit_consumed:
+        type: string
+    type: object
   entity.User:
     properties:
       created_at:
@@ -94,6 +131,33 @@ definitions:
       username:
         type: string
     type: object
+  entity.UserBiometric:
+    properties:
+      activity_level:
+        $ref: '#/definitions/entity.ActivityLevel'
+      body_fat_percentage:
+        type: number
+      chest_circumference_cm:
+        type: number
+      created_at:
+        type: string
+      height_cm:
+        type: number
+      hip_circumference_cm:
+        type: number
+      id:
+        type: string
+      log_date:
+        type: string
+      resting_heart_rate_bpm:
+        type: integer
+      user_id:
+        type: string
+      waist_circumference_cm:
+        type: number
+      weight_kg:
+        type: number
+    type: object
   entity.UserGender:
     enum:
     - Male
@@ -102,6 +166,123 @@ definitions:
     x-enum-varnames:
     - UserGenderMale
     - UserGenderFemale
+  entity.UserMeal:
+    properties:
+      created_at:
+        type: string
+      custom_meal_name:
+        type: string
+      id:
+        type: string
+      meal_date:
+        type: string
+      meal_time:
+        type: string
+      meal_type:
+        $ref: '#/definitions/entity.UserMealType'
+      notes:
+        type: string
+      total_calories_consumed:
+        type: number
+      total_carbs_consumed:
+        type: number
+      total_fat_consumed:
+        type: number
+      total_protein_consumed:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.UserMealType:
+    enum:
+    - breakfast
+    - lunch
+    - dinner
+    - snack
+    - other
+    type: string
+    x-enum-varnames:
+    - UserMealTypeBreakfast
+    - UserMealTypeLunch
+    - UserMealTypeDinner
+    - UserMealTypeSnack
+    - UserMealTypeOther
+  entity.UserNutritionGoal:
+    properties:
+      created_at:
+        type: string
+      goal_effective_date:
+        type: string
+      id:
+        type: string
+      is_active:
+        type: boolean
+      notes:
+        type: string
+      target_calories:
+        type: number
+      target_carbs_grams:
+        type: number
+      target_fat_grams:
+        type: number
+      target_fiber_grams:
+        type: number
+      target_protein_grams:
+        type: number
+      target_sugar_grams_limit:
+        type: number
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.UserWorkoutSession:
+    properties:
+      completed_at:
+        type: string
+      created_at:
+        type: string
+      duration_minutes:
+        type: integer
+      id:
+        type: string
+      location:
+        type: string
+      mood_rating:
+        type: integer
+      notes:
+        type: string
+      perceived_exertion_rating:
+        type: integer
+      plan_id:
+        type: string
+      scheduled_at:
+        type: string
+      session_name:
+        type: string
+      started_at:
+        type: string
+      status:
+        $ref: '#/definitions/entity.WorkoutSessionStatus'
+      updated_at:
+        type: string
+      user_id:
+        type: string
+    type: object
+  entity.WorkoutSessionStatus:
+    enum:
+    - scheduled
+    - in_progress
+    - completed
+    - cancelled
+    type: string
+    x-enum-varnames:
+    - WorkoutSessionStatusScheduled
+    - WorkoutSessionStatusInProgress
+    - WorkoutSessionStatusCompleted
+    - WorkoutSessionStatusCancelled
   v1.ErrorResponse:
     properties:
       error:
@@ -124,7 +305,7 @@ info:
   title: Rebound API
   version: "1.0"
 paths:
-  /api/v1/users:
+  /api/users:
     get:
       description: Get a paginated list of users
       parameters:
@@ -194,7 +375,7 @@ paths:
       summary: Create a new user
       tags:
       - users
-  /api/v1/users/{id}:
+  /api/users/{id}:
     delete:
       description: Delete a user by their ID
       parameters:
@@ -291,7 +472,7 @@ paths:
       summary: Update a user
       tags:
       - users
-  /api/v1/users/{id}/password:
+  /api/users/{id}/password:
     put:
       consumes:
       - application/json
@@ -332,7 +513,7 @@ paths:
       summary: Update user password
       tags:
       - users
-  /api/v1/users/{id}/verify-email:
+  /api/users/{id}/verify-email:
     put:
       consumes:
       - application/json
@@ -568,6 +749,1044 @@ paths:
       summary: Search food items
       tags:
       - food-items
+  /meals:
+    post:
+      consumes:
+      - application/json
+      description: Create a new meal for a user
+      parameters:
+      - description: Meal object
+        in: body
+        name: meal
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserMeal'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.UserMeal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Create a new meal
+      tags:
+      - meals
+  /meals/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a meal by its ID
+      parameters:
+      - description: Meal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete a meal
+      tags:
+      - meals
+    get:
+      consumes:
+      - application/json
+      description: Get a meal by its ID
+      parameters:
+      - description: Meal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserMeal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get a meal by ID
+      tags:
+      - meals
+    put:
+      consumes:
+      - application/json
+      description: Update an existing meal
+      parameters:
+      - description: Meal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Meal object
+        in: body
+        name: meal
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserMeal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserMeal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update a meal
+      tags:
+      - meals
+  /meals/{id}/food-items:
+    get:
+      consumes:
+      - application/json
+      description: Get all food items for a meal
+      parameters:
+      - description: Meal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.MealFoodItem'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get meal food items
+      tags:
+      - meals
+    post:
+      consumes:
+      - application/json
+      description: Add a new food item to a meal
+      parameters:
+      - description: Meal ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Food item object
+        in: body
+        name: foodItem
+        required: true
+        schema:
+          $ref: '#/definitions/entity.MealFoodItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.MealFoodItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Add food item to meal
+      tags:
+      - meals
+  /meals/food-items/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a food item from a meal
+      parameters:
+      - description: Food item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete meal food item
+      tags:
+      - meals
+    put:
+      consumes:
+      - application/json
+      description: Update an existing food item in a meal
+      parameters:
+      - description: Food item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Food item object
+        in: body
+        name: foodItem
+        required: true
+        schema:
+          $ref: '#/definitions/entity.MealFoodItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.MealFoodItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update meal food item
+      tags:
+      - meals
+  /meals/user/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all meals for a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserMeal'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get user meals
+      tags:
+      - meals
+  /nutrition/biometrics:
+    post:
+      consumes:
+      - application/json
+      description: Create new biometrics for a user
+      parameters:
+      - description: Biometrics object
+        in: body
+        name: biometrics
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserBiometric'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.UserBiometric'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Create biometrics
+      tags:
+      - nutrition
+  /nutrition/biometrics/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete biometrics by ID
+      parameters:
+      - description: Biometrics ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete biometrics
+      tags:
+      - nutrition
+    get:
+      consumes:
+      - application/json
+      description: Get biometrics by ID
+      parameters:
+      - description: Biometrics ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserBiometric'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get biometrics
+      tags:
+      - nutrition
+    put:
+      consumes:
+      - application/json
+      description: Update existing biometrics
+      parameters:
+      - description: Biometrics ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Biometrics object
+        in: body
+        name: biometrics
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserBiometric'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserBiometric'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update biometrics
+      tags:
+      - nutrition
+  /nutrition/biometrics/user/{userID}/history:
+    get:
+      consumes:
+      - application/json
+      description: Get biometrics history for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserBiometric'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get user biometrics history
+      tags:
+      - nutrition
+  /nutrition/biometrics/user/{userID}/latest:
+    get:
+      consumes:
+      - application/json
+      description: Get the most recent biometrics for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserBiometric'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get latest biometrics
+      tags:
+      - nutrition
+  /nutrition/goals:
+    post:
+      consumes:
+      - application/json
+      description: Create new nutrition goals for a user
+      parameters:
+      - description: Nutrition goals object
+        in: body
+        name: goals
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserNutritionGoal'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.UserNutritionGoal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Create nutrition goals
+      tags:
+      - nutrition
+  /nutrition/goals/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete nutrition goals by ID
+      parameters:
+      - description: Nutrition goals ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete nutrition goals
+      tags:
+      - nutrition
+    get:
+      consumes:
+      - application/json
+      description: Get nutrition goals by ID
+      parameters:
+      - description: Nutrition goals ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserNutritionGoal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get nutrition goals
+      tags:
+      - nutrition
+    put:
+      consumes:
+      - application/json
+      description: Update existing nutrition goals
+      parameters:
+      - description: Nutrition goals ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Nutrition goals object
+        in: body
+        name: goals
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserNutritionGoal'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserNutritionGoal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update nutrition goals
+      tags:
+      - nutrition
+  /nutrition/goals/user/{userID}/active:
+    get:
+      consumes:
+      - application/json
+      description: Get the active nutrition goals for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserNutritionGoal'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get active nutrition goals
+      tags:
+      - nutrition
+  /nutrition/goals/user/{userID}/history:
+    get:
+      consumes:
+      - application/json
+      description: Get nutrition goals history for a user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserNutritionGoal'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get nutrition goals history
+      tags:
+      - nutrition
+  /workout-sessions:
+    post:
+      consumes:
+      - application/json
+      description: Create a new workout session for a user
+      parameters:
+      - description: Workout session object
+        in: body
+        name: session
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserWorkoutSession'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.UserWorkoutSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Create a new workout session
+      tags:
+      - workout-sessions
+  /workout-sessions/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a workout session by its ID
+      parameters:
+      - description: Workout session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete a workout session
+      tags:
+      - workout-sessions
+    get:
+      consumes:
+      - application/json
+      description: Get a workout session by its ID
+      parameters:
+      - description: Workout session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserWorkoutSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get a workout session by ID
+      tags:
+      - workout-sessions
+    put:
+      consumes:
+      - application/json
+      description: Update an existing workout session
+      parameters:
+      - description: Workout session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Workout session object
+        in: body
+        name: session
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserWorkoutSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserWorkoutSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update a workout session
+      tags:
+      - workout-sessions
+  /workout-sessions/{id}/exercises:
+    get:
+      consumes:
+      - application/json
+      description: Get all exercises for a workout session
+      parameters:
+      - description: Workout session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserWorkoutSession'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get workout session exercises
+      tags:
+      - workout-sessions
+    post:
+      consumes:
+      - application/json
+      description: Add a new exercise to a workout session
+      parameters:
+      - description: Workout session ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Exercise object
+        in: body
+        name: exercise
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserWorkoutSession'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.UserWorkoutSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Add exercise to workout session
+      tags:
+      - workout-sessions
+  /workout-sessions/exercises/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete an exercise from a workout session
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete workout exercise
+      tags:
+      - workout-sessions
+    put:
+      consumes:
+      - application/json
+      description: Update an existing exercise in a workout session
+      parameters:
+      - description: Exercise ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Exercise object
+        in: body
+        name: exercise
+        required: true
+        schema:
+          $ref: '#/definitions/entity.UserWorkoutSession'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.UserWorkoutSession'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update workout exercise
+      tags:
+      - workout-sessions
+  /workout-sessions/user/{userID}:
+    get:
+      consumes:
+      - application/json
+      description: Get all workout sessions for a specific user
+      parameters:
+      - description: User ID
+        in: path
+        name: userID
+        required: true
+        type: string
+      - default: 1
+        description: Page number
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: Page size
+        in: query
+        name: pageSize
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.UserWorkoutSession'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get user workout sessions
+      tags:
+      - workout-sessions
 schemes:
 - http
 - https

@@ -20,7 +20,7 @@ import (
 // @Failure 400 {object} ErrorResponse
 // @Failure 409 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users [post]
+// @Router /api/users [post]
 func (h *userHandler) create(c *fiber.Ctx) error {
 	var body struct {
 		User     entity.User `json:"user"`
@@ -56,7 +56,7 @@ func (h *userHandler) create(c *fiber.Ctx) error {
 // @Success 200 {object} entity.User
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users/{id} [get]
+// @Router /api/users/{id} [get]
 func (h *userHandler) getByID(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -83,7 +83,7 @@ func (h *userHandler) getByID(c *fiber.Ctx) error {
 // @Success 200 {object} PaginatedResponse{data=[]entity.User}
 // @Failure 400 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users [get]
+// @Router /api/users [get]
 func (h *userHandler) list(c *fiber.Ctx) error {
 	page, _ := strconv.Atoi(c.Query("page", "1"))
 	size, _ := strconv.Atoi(c.Query("size", "10"))
@@ -114,7 +114,7 @@ func (h *userHandler) list(c *fiber.Ctx) error {
 // @Failure 404 {object} ErrorResponse
 // @Failure 409 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users/{id} [put]
+// @Router /api/users/{id} [put]
 func (h *userHandler) update(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -153,7 +153,7 @@ func (h *userHandler) update(c *fiber.Ctx) error {
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users/{id} [delete]
+// @Router /api/users/{id} [delete]
 func (h *userHandler) delete(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -182,7 +182,7 @@ func (h *userHandler) delete(c *fiber.Ctx) error {
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users/{id}/password [put]
+// @Router /api/users/{id}/password [put]
 func (h *userHandler) updatePassword(c *fiber.Ctx) error {
 	id := c.Params("id")
 
@@ -221,7 +221,7 @@ func (h *userHandler) updatePassword(c *fiber.Ctx) error {
 // @Failure 400 {object} ErrorResponse
 // @Failure 404 {object} ErrorResponse
 // @Failure 500 {object} ErrorResponse
-// @Router /api/v1/users/{id}/verify-email [put]
+// @Router /api/users/{id}/verify-email [put]
 func (h *userHandler) updateEmailVerification(c *fiber.Ctx) error {
 	id := c.Params("id")
 
