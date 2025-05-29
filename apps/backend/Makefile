@@ -44,8 +44,9 @@ format: ### Run code formatter
 dev:
 	@echo "dev: Running Go backend..." \
     deps swag-v1 \
-	go mod download && CGO_ENABLED=0 go run -tags migrate ./cmd/app
+	go mod download && CGO_ENABLED=0 go run ./cmd/app
 .PHONY: dev 
+### go mod download && CGO_ENABLED=0 go run -tags migrate ./cmd/app
 
 
 linter-golangci: ### check by golangci linter

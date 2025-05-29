@@ -2,32 +2,28 @@ package entity
 
 import "time"
 
+// UserGender represents the gender of a user
+type UserGender string
+
+const (
+	UserGenderMale   UserGender = "Male"
+	UserGenderFemale UserGender = "Female"
+)
+
 // User represents a user in the system
 type User struct {
-	ID        int64     `json:"id"`
-	Email     string    `json:"email"`
-	Password  string    `json:"-"` // Password is never exposed in JSON
-	Name      string    `json:"name"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-}
-
-// UserRepository interface defines the methods for user data persistence
-type UserRepository interface {
-	Create(user *User) error
-	GetByID(id int64) (*User, error)
-	GetByEmail(email string) (*User, error)
-	Update(user *User) error
-	Delete(id int64) error
-}
-
-// UserUseCase interface defines the business logic for users
-type UserUseCase interface {
-	Register(email, password, name string) (*User, error)
-	Login(email, password string) (string, error) // Returns JWT token
-	GetUser(id int64) (*User, error)
-	GetUserByEmail(email string) (*User, error)
-	UpdateUser(user *User) error
-	DeleteUser(id int64) error
-	ValidateToken(token string) (*User, error)
+	ID                string     `json:"id"`
+	Username          string     `json:"username"`
+	Email             string     `json:"email"`
+	PasswordHash      string     `json:"-"` // Never expose password hash in JSON
+	FirstName         string     `json:"first_name"`
+	LastName          string     `json:"last_name"`
+	DateOfBirth       *time.Time `json:"date_of_birth,omitempty"`
+	Gender            UserGender `json:"gender,omitempty"`
+	ProfilePictureURL string     `json:"profile_picture_url,omitempty"`
+	IsActive          bool       `json:"is_active"`
+	IsEmailVerified   bool       `json:"is_email_verified"`
+	LastLoginAt       *time.Time `json:"last_login_at,omitempty"`
+	CreatedAt         time.Time  `json:"created_at"`
+	UpdatedAt         time.Time  `json:"updated_at"`
 }

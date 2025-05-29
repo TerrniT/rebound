@@ -9,7 +9,7 @@ import (
 
 	"github.com/terrnit/rebound/backend/config"
 	"github.com/terrnit/rebound/backend/internal/controller/router"
-	pgrepo "github.com/terrnit/rebound/backend/internal/repository/postgres"
+	repo "github.com/terrnit/rebound/backend/internal/repository"
 	"github.com/terrnit/rebound/backend/internal/usecase"
 	"github.com/terrnit/rebound/backend/pkg/httpserver"
 	"github.com/terrnit/rebound/backend/pkg/logger"
@@ -28,31 +28,17 @@ func Run(cfg *config.Config) {
 	defer pg.Close()
 
 	// Initialize repositories
-	userRepo := pgrepo.NewUserRepository(pg)
-	nutritionRepo := pgrepo.NewNutritionRepository(pg)
-	mealRepo := pgrepo.NewMealRepository(pg)
-	productRepo := pgrepo.NewProductRepository(pg)
-	authRepo := pgrepo.NewAuthRepository(pg)
+	foodItemRepo := repo.NewFoodItemRepository(pg)
+	userRepo := repo.NewUserRepository(pg)
 
 	// Initialize use cases
-	userUC := usecase.NewUserUseCase(userRepo)
-	nutritionUC := usecase.NewNutritionUseCase(nutritionRepo)
-	mealUC := usecase.NewMealUseCase(mealRepo, nutritionRepo)
-	productUC := usecase.NewProductUseCase(productRepo, nutritionRepo)
-	authUC := usecase.NewAuthUseCase(authRepo, userRepo)
+	foodItemUC := usecase.NewFoodItemUseCase(foodItemRepo, *&usecase.Config{MaxPageSize: 100, DefaultPageSize: 10})
+	userUC := usecase.NewUserUseCase(userRepo, *&usecase.UserConfig{MaxPageSize: 100, DefaultPageSize: 10})
 
 	// HTTP Server
 	httpServer := httpserver.New(httpserver.Port(cfg.HTTP.Port), httpserver.Prefork(cfg.HTTP.UsePreforkMode))
 
-	router.NewRouter(
-		httpServer.App,
-		userUC,
-		nutritionUC,
-		mealUC,
-		productUC,
-		authUC,
-		l,
-	)
+	router.NewRouter(httpServer.App, userUC, foodItemUC, l)
 
 	// Start servers
 	httpServer.Start()

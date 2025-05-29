@@ -10,7 +10,7 @@ import (
 	"github.com/gofiber/swagger"
 	_ "github.com/terrnit/rebound/backend/docs" // Swagger docs.
 	v1 "github.com/terrnit/rebound/backend/internal/controller/router/v1"
-	"github.com/terrnit/rebound/backend/internal/entity"
+	"github.com/terrnit/rebound/backend/internal/usecase"
 	"github.com/terrnit/rebound/backend/pkg/logger"
 )
 
@@ -30,11 +30,8 @@ type Router struct {
 // @description Type "Bearer" followed by a space and JWT token.
 func NewRouter(
 	app *fiber.App,
-	userUC entity.UserUseCase,
-	nutritionUC entity.NutritionUseCase,
-	mealUC entity.MealUseCase,
-	productUC entity.ProductUseCase,
-	authUC entity.AuthUseCase,
+	userUC *usecase.UserUseCase,
+	foodItemUC *usecase.FoodItemUseCase,
 	l logger.Interface,
 ) *Router {
 	app.Use(cors.New())
@@ -52,10 +49,7 @@ func NewRouter(
 	api := app.Group("/api")
 	{
 		v1.NewUserRoutes(api, userUC, l)
-		v1.NewNutritionRoutes(api, nutritionUC, l)
-		v1.NewMealRoutes(api, mealUC, l)
-		v1.NewProductRoutes(api, productUC, l)
-		v1.NewAuthRoutes(api, authUC, l)
+		v1.NewFoodItemRoutes(api, foodItemUC, l)
 	}
 
 	return &Router{

@@ -1,78 +1,121 @@
 basePath: /api
 definitions:
-  entity.Meal:
+  entity.FoodItem:
     properties:
+      barcode_upc:
+        type: string
+      brand_name:
+        type: string
+      calcium_mg_per_default_serving:
+        type: number
+      calories_per_default_serving:
+        type: number
+      carbs_grams_per_default_serving:
+        type: number
+      cholesterol_mg_per_default_serving:
+        type: number
       created_at:
         type: string
-      date:
+      created_by_user_id:
         type: string
-      description:
-        type: string
+      fat_grams_per_default_serving:
+        type: number
+      fiber_grams_per_default_serving:
+        type: number
       id:
-        type: integer
+        type: string
+      iron_mg_per_default_serving:
+        type: number
+      is_verified:
+        type: boolean
       name:
         type: string
-      nutrition:
-        $ref: '#/definitions/entity.Nutrition'
-      type:
-        $ref: '#/definitions/entity.MealType'
+      potassium_mg_per_default_serving:
+        type: number
+      protein_grams_per_default_serving:
+        type: number
+      saturated_fat_grams_per_default_serving:
+        type: number
+      serving_size_default_qty:
+        type: number
+      serving_size_default_unit:
+        type: string
+      sodium_mg_per_default_serving:
+        type: number
+      source:
+        $ref: '#/definitions/entity.FoodItemSource'
+      sugar_grams_per_default_serving:
+        type: number
+      trans_fat_grams_per_default_serving:
+        type: number
       updated_at:
         type: string
-      user_id:
-        type: integer
+      vitamin_a_mcg_per_default_serving:
+        type: number
+      vitamin_c_mg_per_default_serving:
+        type: number
     type: object
-  entity.MealType:
+  entity.FoodItemSource:
     enum:
-    - breakfast
-    - lunch
-    - dinner
-    - snack
+    - user_created
+    - system
+    - api
     type: string
     x-enum-varnames:
-    - Breakfast
-    - Lunch
-    - Dinner
-    - Snack
-  entity.Nutrition:
-    properties:
-      calories:
-        type: number
-      carbs:
-        type: number
-      created_at:
-        type: string
-      fats:
-        type: number
-      id:
-        type: integer
-      proteins:
-        type: number
-      serving_size:
-        type: number
-      unit:
-        type: string
-      updated_at:
-        type: string
-    type: object
-  entity.Token:
-    properties:
-      access_token:
-        type: string
-      expires_at:
-        type: string
-    type: object
+    - FoodItemSourceUserCreated
+    - FoodItemSourceSystem
+    - FoodItemSourceAPI
   entity.User:
     properties:
       created_at:
         type: string
+      date_of_birth:
+        type: string
       email:
         type: string
+      first_name:
+        type: string
+      gender:
+        $ref: '#/definitions/entity.UserGender'
       id:
-        type: integer
-      name:
+        type: string
+      is_active:
+        type: boolean
+      is_email_verified:
+        type: boolean
+      last_login_at:
+        type: string
+      last_name:
+        type: string
+      profile_picture_url:
         type: string
       updated_at:
         type: string
+      username:
+        type: string
+    type: object
+  entity.UserGender:
+    enum:
+    - Male
+    - Female
+    type: string
+    x-enum-varnames:
+    - UserGenderMale
+    - UserGenderFemale
+  v1.ErrorResponse:
+    properties:
+      error:
+        type: string
+    type: object
+  v1.PaginatedResponse:
+    properties:
+      data: {}
+      page:
+        type: integer
+      size:
+        type: integer
+      total:
+        type: integer
     type: object
 host: localhost:8080
 info:
@@ -81,220 +124,17 @@ info:
   title: Rebound API
   version: "1.0"
 paths:
-  /auth/token:
-    post:
-      consumes:
-      - application/json
-      description: Create a new authentication token for a user
-      parameters:
-      - description: User object
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/entity.User'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/entity.Token'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new token
-      tags:
-      - auth
-  /auth/token/{token}:
-    delete:
-      consumes:
-      - application/json
-      description: Revoke a specific token
-      parameters:
-      - description: Token string
-        in: path
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Revoke token
-      tags:
-      - auth
-  /auth/validate/{token}:
+  /api/v1/users:
     get:
-      consumes:
-      - application/json
-      description: Validate a token and get the associated user
+      description: Get a paginated list of users
       parameters:
-      - description: Token string
-        in: path
-        name: token
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "401":
-          description: Unauthorized
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Validate token
-      tags:
-      - auth
-  /meals:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of meals with pagination
-      parameters:
-      - description: User ID
+      - description: 'Page number (default: 1)'
         in: query
-        name: user_id
-        required: true
+        name: page
         type: integer
-      - description: Start date (YYYY-MM-DD)
+      - description: 'Page size (default: 10)'
         in: query
-        name: start_date
-        type: string
-      - description: End date (YYYY-MM-DD)
-        in: query
-        name: end_date
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Meal'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: List meals
-      tags:
-      - meals
-    post:
-      consumes:
-      - application/json
-      description: Create a new meal with the provided information
-      parameters:
-      - description: Meal object
-        in: body
-        name: meal
-        required: true
-        schema:
-          $ref: '#/definitions/entity.Meal'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/entity.Meal'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new meal
-      tags:
-      - meals
-  /meals/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a meal by its ID
-      parameters:
-      - description: Meal ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Delete meal
-      tags:
-      - meals
-    get:
-      consumes:
-      - application/json
-      description: Get meal information by its ID
-      parameters:
-      - description: Meal ID
-        in: path
-        name: id
-        required: true
+        name: size
         type: integer
       produces:
       - application/json
@@ -302,279 +142,31 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/entity.Meal'
+            allOf:
+            - $ref: '#/definitions/v1.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entity.User'
+                  type: array
+              type: object
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get meal by ID
-      tags:
-      - meals
-    put:
-      consumes:
-      - application/json
-      description: Update meal information by its ID
-      parameters:
-      - description: Meal ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Meal object
-        in: body
-        name: meal
-        required: true
-        schema:
-          $ref: '#/definitions/entity.Meal'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.Meal'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update meal
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: List users
       tags:
-      - meals
-  /meals/date/{date}:
-    get:
-      consumes:
-      - application/json
-      description: Get all meals for a specific date
-      parameters:
-      - description: User ID
-        in: query
-        name: user_id
-        required: true
-        type: integer
-      - description: Date (YYYY-MM-DD)
-        in: path
-        name: date
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Meal'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get meals by date
-      tags:
-      - meals
-  /nutrition:
-    get:
-      consumes:
-      - application/json
-      description: Get a list of nutrition entries with pagination
-      parameters:
-      - description: Offset for pagination
-        in: query
-        name: offset
-        type: integer
-      - description: Limit for pagination
-        in: query
-        name: limit
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/entity.Nutrition'
-            type: array
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: List nutrition entries
-      tags:
-      - nutrition
-    post:
-      consumes:
-      - application/json
-      description: Create a new nutrition entry with the provided information
-      parameters:
-      - description: Nutrition object
-        in: body
-        name: nutrition
-        required: true
-        schema:
-          $ref: '#/definitions/entity.Nutrition'
-      produces:
-      - application/json
-      responses:
-        "201":
-          description: Created
-          schema:
-            $ref: '#/definitions/entity.Nutrition'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Create a new nutrition entry
-      tags:
-      - nutrition
-  /nutrition/{id}:
-    delete:
-      consumes:
-      - application/json
-      description: Delete a nutrition entry by its ID
-      parameters:
-      - description: Nutrition ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "204":
-          description: No Content
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Delete nutrition entry
-      tags:
-      - nutrition
-    get:
-      consumes:
-      - application/json
-      description: Get nutrition information by its ID
-      parameters:
-      - description: Nutrition ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.Nutrition'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "404":
-          description: Not Found
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get nutrition entry by ID
-      tags:
-      - nutrition
-    put:
-      consumes:
-      - application/json
-      description: Update nutrition information by its ID
-      parameters:
-      - description: Nutrition ID
-        in: path
-        name: id
-        required: true
-        type: integer
-      - description: Nutrition object
-        in: body
-        name: nutrition
-        required: true
-        schema:
-          $ref: '#/definitions/entity.Nutrition'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/entity.Nutrition'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-        "500":
-          description: Internal Server Error
-          schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update nutrition entry
-      tags:
-      - nutrition
-  /users:
+      - users
     post:
       consumes:
       - application/json
       description: Create a new user with the provided information
       parameters:
-      - description: User object
+      - description: User information
         in: body
         name: user
         required: true
@@ -590,29 +182,27 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
       summary: Create a new user
       tags:
       - users
-  /users/{id}:
+  /api/v1/users/{id}:
     delete:
-      consumes:
-      - application/json
       description: Delete a user by their ID
       parameters:
       - description: User ID
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -621,28 +211,26 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Delete user
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete a user
       tags:
       - users
     get:
-      consumes:
-      - application/json
-      description: Get user information by their ID
+      description: Get a user by their ID
       parameters:
       - description: User ID
         in: path
         name: id
         required: true
-        type: integer
+        type: string
       produces:
       - application/json
       responses:
@@ -650,32 +238,28 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/entity.User'
-        "400":
-          description: Bad Request
-          schema:
-            additionalProperties:
-              type: string
-            type: object
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get user by ID
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get a user by ID
       tags:
       - users
     put:
       consumes:
       - application/json
-      description: Update user information by their ID
+      description: Update a user's information
       parameters:
       - description: User ID
         in: path
         name: id
         required: true
-        type: integer
-      - description: User object
+        type: string
+      - description: Updated user information
         in: body
         name: user
         required: true
@@ -691,29 +275,41 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
         "500":
           description: Internal Server Error
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Update user
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update a user
       tags:
       - users
-  /users/email/{email}:
-    get:
+  /api/v1/users/{id}/password:
+    put:
       consumes:
       - application/json
-      description: Get user information by their email address
+      description: Update a user's password
       parameters:
-      - description: User email
+      - description: User ID
         in: path
-        name: email
+        name: id
         required: true
         type: string
+      - description: New password
+        in: body
+        name: password
+        required: true
+        schema:
+          additionalProperties:
+            type: string
+          type: object
       produces:
       - application/json
       responses:
@@ -724,18 +320,254 @@ paths:
         "400":
           description: Bad Request
           schema:
-            additionalProperties:
-              type: string
-            type: object
+            $ref: '#/definitions/v1.ErrorResponse'
         "404":
           description: Not Found
           schema:
-            additionalProperties:
-              type: string
-            type: object
-      summary: Get user by email
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update user password
       tags:
       - users
+  /api/v1/users/{id}/verify-email:
+    put:
+      consumes:
+      - application/json
+      description: Update a user's email verification status
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Verification status
+        in: body
+        name: verified
+        required: true
+        schema:
+          additionalProperties:
+            type: boolean
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.User'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update email verification status
+      tags:
+      - users
+  /food-items:
+    get:
+      description: Get a paginated list of food items
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Items per page (default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entity.FoodItem'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: List food items
+      tags:
+      - food-items
+    post:
+      consumes:
+      - application/json
+      description: Create a new food item with the provided details
+      parameters:
+      - description: Food item details
+        in: body
+        name: foodItem
+        required: true
+        schema:
+          $ref: '#/definitions/entity.FoodItem'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/entity.FoodItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Create a new food item
+      tags:
+      - food-items
+  /food-items/{id}:
+    delete:
+      description: Delete a food item by its ID
+      parameters:
+      - description: Food item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      responses:
+        "204":
+          description: No Content
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Delete a food item
+      tags:
+      - food-items
+    get:
+      description: Get a food item by its ID
+      parameters:
+      - description: Food item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.FoodItem'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Get a food item by ID
+      tags:
+      - food-items
+    put:
+      consumes:
+      - application/json
+      description: Update an existing food item
+      parameters:
+      - description: Food item ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Updated food item details
+        in: body
+        name: foodItem
+        required: true
+        schema:
+          $ref: '#/definitions/entity.FoodItem'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.FoodItem'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Update a food item
+      tags:
+      - food-items
+  /food-items/search:
+    get:
+      description: Search food items by name or brand
+      parameters:
+      - description: Search query
+        in: query
+        name: query
+        required: true
+        type: string
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Items per page (default: 10)'
+        in: query
+        name: page_size
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/v1.PaginatedResponse'
+            - properties:
+                data:
+                  items:
+                    $ref: '#/definitions/entity.FoodItem'
+                  type: array
+              type: object
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/v1.ErrorResponse'
+      summary: Search food items
+      tags:
+      - food-items
 schemes:
 - http
 - https
