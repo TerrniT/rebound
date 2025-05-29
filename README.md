@@ -12,7 +12,7 @@ Rebound is a dynamic fitness app designed to help users build sustainable habits
 ### **Tech Stack**  
 - Frontend: [Vue]  
 - Backend: [Go]   
-- Database: [Firebase/PostgreSQL/MongoDB] (Pick the one) 
+- Database: [PostgreSQL]
 
 ### **Contribute**  
 We welcome developers, designers, and fitness enthusiasts! Check out our:  
